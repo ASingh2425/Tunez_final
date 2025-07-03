@@ -1,5 +1,5 @@
-import NavBar from "./NavBar";
-import Footer from "./Footer";
+import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 import { useState } from "react";
 import { FavouritesContext } from "../context/FavouritesContext";
 import Cards from "../components/Cards";
