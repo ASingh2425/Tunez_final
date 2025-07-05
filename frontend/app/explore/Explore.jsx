@@ -1,12 +1,13 @@
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
-import { useState } from "react";
-import { FavouritesContext } from "../context/FavouritesContext";
-import Cards from "../components/Cards";
-import allSongs from "../data/songs";
-import SongModal from "../components/SongModal";
+"use client";
+import NavBar from "../../components/NavBar";
+import Footer from "../../components/Footer";
+import { useState, useContext } from "react";
+import { FavouritesContext } from "../../context/FavouritesContext";
+import Cards from "../../components/Cards";
+import allSongs from "../../data/songs";
+import SongModal from "../../components/SongModal";
 
-function Explore() {
+export default function ExplorePage() {
   const allLanguages = ["English", "Hindi"];
   const allGenres = ["Rap", "Party", "Melancholy", "Romance", "R&B"];
 
@@ -25,14 +26,17 @@ function Explore() {
     const langMatch =
       selectedLanguages.length === 0 ||
       selectedLanguages.includes(song.language);
+
     const genreMatch =
       selectedGenres.length === 0 ||
       (Array.isArray(song.genre)
         ? song.genre.some((g) => selectedGenres.includes(g))
         : selectedGenres.includes(song.genre));
+
     const searchMatch = song.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
+
     return langMatch && genreMatch && searchMatch;
   });
 
@@ -47,6 +51,7 @@ function Explore() {
           <aside className="w-64 bg-gray-800 p-4 border-r border-gray-700 text-white rounded-lg">
             <h2 className="text-xl font-semibold mb-3">Filter Songs</h2>
 
+            {/* Language Filters */}
             <div className="mb-6">
               <h3 className="font-medium mb-2">Languages</h3>
               <div className="flex flex-wrap gap-2">
@@ -68,6 +73,7 @@ function Explore() {
               </div>
             </div>
 
+            {/* Genre Filters */}
             <div className="mb-6">
               <h3 className="font-medium mb-2">Genres</h3>
               <div className="flex flex-wrap gap-2">
@@ -119,7 +125,7 @@ function Explore() {
               {filteredSongs.length > 0 ? (
                 filteredSongs.map((song) => (
                   <div
-                    key={song.id} 
+                    key={song.id}
                     onClick={() => setSelectedSong(song)}
                     className="cursor-pointer animate-fadeInUp"
                   >
@@ -151,5 +157,3 @@ function Explore() {
     </>
   );
 }
-
-export default Explore;
