@@ -1,23 +1,26 @@
-import { useParams, useNavigate } from "react-router-dom";
-import NavBar from "../../components/NavBar";
-import Footer from "../../components/Footer";
+"use client";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import songsData from "../data/songs";
+import NavBar from "../../../components/NavBar";
+import Footer from "../../../components/Footer";
+import songsData from "../../../data/songs";
 
-function SongDetails() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+export default function SongDetailsPage() {
+  const params = useParams();
+  const router = useRouter();
   const [song, setSong] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    const foundSong = songsData.find((s) => s.id === parseInt(id));
-    if (foundSong) {
-      setSong(foundSong);
-    } else {
-      navigate("/explore");
+    if (params.id) {
+      const foundSong = songsData.find((s) => s.id === parseInt(params.id));
+      if (foundSong) {
+        setSong(foundSong);
+      } else {
+        router.push("/explore");
+      }
     }
-  }, [id, navigate]);
+  }, [params.id, router]);
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -38,7 +41,7 @@ function SongDetails() {
 
         <div className="max-w-5xl mx-auto py-12 px-6 animate-fadeInUp">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => router.back()}
             className="text-indigo-400 mb-4 hover:underline"
           >
             ← Back
@@ -57,10 +60,13 @@ function SongDetails() {
 
               <p className="mb-2">
                 <span className="font-semibold">Genre:</span>{" "}
-                {Array.isArray(song.genre) ? song.genre.join(", ") : song.genre}
+                {Array.isArray(song.genre)
+                  ? song.genre.join(", ")
+                  : song.genre}
               </p>
               <p className="mb-4">
-                <span className="font-semibold">Language:</span> {song.language}
+                <span className="font-semibold">Language:</span>{" "}
+                {song.language}
               </p>
 
               <div className="flex gap-4">
@@ -109,5 +115,3 @@ function SongDetails() {
     </>
   );
 }
-
-export default SongDetails;
