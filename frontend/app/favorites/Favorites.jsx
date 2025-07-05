@@ -1,12 +1,13 @@
+"use client";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
-import { FavouritesContext } from "../context/FavouritesContext";
-import allSongs from "../data/songs";
-import Cards from "../components/Cards";
+import Link from "next/link";
+import NavBar from "../../components/NavBar";
+import Footer from "../../components/Footer";
+import { FavouritesContext } from "../../context/FavouritesContext";
+import allSongs from "../../data/songs";
+import Cards from "../../components/Cards";
 
-function Favourites() {
+export default function FavouritesPage() {
   const { favourites } = useContext(FavouritesContext);
 
   const favSongs = allSongs.filter((song) => favourites.includes(song.id));
@@ -23,15 +24,17 @@ function Favourites() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {favSongs.map((song) => (
-              <Link to={`/song/${song.id}`} key={song.id}>
-                <Cards
-                  title={song.name}
-                  desp={song.desp}
-                  image={song.image}
-                  language={song.language}
-                  genre={song.genre}
-                  songId={song.id}
-                />
+              <Link href={`/song/${song.id}`} key={song.id}>
+                <div>
+                  <Cards
+                    title={song.name}
+                    desp={song.desp}
+                    image={song.image}
+                    language={song.language}
+                    genre={song.genre}
+                    songId={song.id}
+                  />
+                </div>
               </Link>
             ))}
           </div>
@@ -42,5 +45,3 @@ function Favourites() {
     </>
   );
 }
-
-export default Favourites;
