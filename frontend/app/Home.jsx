@@ -1,10 +1,12 @@
-import NavBar from "./components/NavBar";
-import Footer from "./components/Footer";
+"use client";
+import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 
-function Home() {
+export default function HomePage() {
   return (
     <>
       <section className="relative bg-gradient-to-bl from-purple-900 via-blue-800 via-indigo-800 to-black min-h-screen overflow-hidden">
+        {/* Floating Music Notes */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           {Array.from({ length: 25 }).map((_, index) => {
             const top = `${Math.random() * 100}%`;
@@ -33,6 +35,7 @@ function Home() {
           })}
         </div>
 
+        {/* Nav & Hero */}
         <div className="relative z-10">
           <NavBar />
 
@@ -47,5 +50,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;
