@@ -1,98 +1,159 @@
-import { useState } from "react";
-import NavBar from "../components/NavBar";
-import Footer from "../components/Footer";
+"use client";
+import NavBar from "../../components/NavBar";
+import Footer from "../../components/Footer";
+import { useState, useContext } from "react";
+import { FavouritesContext } from "../../context/FavouritesContext";
+import Cards from "../../components/Cards";
+import allSongs from "../../data/songs";
+import SongModal from "../../components/SongModal";
 
-function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
+export default function ExplorePage() {
+  const allLanguages = ["English", "Hindi"];
+  const allGenres = ["Rap", "Party", "Melancholy", "Romance", "R&B"];
+
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSong, setSelectedSong] = useState(null);
+
+  const toggleTag = (value, list, setList) => {
+    setList((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
+
+  const filteredSongs = allSongs.filter((song) => {
+    const langMatch =
+      selectedLanguages.length === 0 ||
+      selectedLanguages.includes(song.language);
+
+    const genreMatch =
+      selectedGenres.length === 0 ||
+      (Array.isArray(song.genre)
+        ? song.genre.some((g) => selectedGenres.includes(g))
+        : selectedGenres.includes(song.genre));
+
+    const searchMatch = song.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+
+    return langMatch && genreMatch && searchMatch;
   });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Thanks for contacting us!");
-    setFormData({ name: "", email: "", message: "" });
-  };
 
   return (
     <>
-      <section className="bg-gradient-to-b from-indigo-800 to-black min-h-screen">
+      <section className="bg-gradient-to-b from-purple-950 to-black pb-6">
         <NavBar />
+      </section>
 
-        <div className="max-w-xl mx-auto text-white py-16 px-6 animate-fadeInUp">
-          <h1 className="text-3xl font-bold mb-6 text-center">Contact Us</h1>
-          <p className="text-gray-300 mb-8 text-center">
-            Have a suggestion, feedback or a track we should know about? Drop us a message!
-          </p>
+      <section className="bg-black min-h-screen px-10 py-6 text-white">
+        <div className="flex">
+          <aside className="w-64 bg-gray-800 p-4 border-r border-gray-700 text-white rounded-lg">
+            <h2 className="text-xl font-semibold mb-3">Filter Songs</h2>
 
-          <form
-            onSubmit={handleSubmit}
-            className="bg-gray-900 p-6 rounded-lg shadow-lg space-y-5"
-          >
-            <div>
-              <label htmlFor="name" className="block mb-2 font-medium">
-                Name
-              </label>
+            {/* Language Filters */}
+            <div className="mb-6">
+              <h3 className="font-medium mb-2">Languages</h3>
+              <div className="flex flex-wrap gap-2">
+                {allLanguages.map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() =>
+                      toggleTag(lang, selectedLanguages, setSelectedLanguages)
+                    }
+                    className={`px-3 py-1 rounded-full border ${
+                      selectedLanguages.includes(lang)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-700 text-gray-200"
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Genre Filters */}
+            <div className="mb-6">
+              <h3 className="font-medium mb-2">Genres</h3>
+              <div className="flex flex-wrap gap-2">
+                {allGenres.map((genre) => (
+                  <button
+                    key={genre}
+                    onClick={() =>
+                      toggleTag(genre, selectedGenres, setSelectedGenres)
+                    }
+                    className={`px-3 py-1 rounded-full border ${
+                      selectedGenres.includes(genre)
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-700 text-gray-200"
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => {
+                  setSelectedLanguages([]);
+                  setSelectedGenres([]);
+                  setSearchQuery("");
+                }}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 transition text-white rounded"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </aside>
+
+          <main className="flex-1 pl-6">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-2xl font-bold">Songs</h1>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Search songs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="px-3 py-1 rounded-lg bg-white text-black placeholder-gray-500 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
-            <div>
-              <label htmlFor="email" className="block mb-2 font-medium">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredSongs.length > 0 ? (
+                filteredSongs.map((song) => (
+                  <div
+                    key={song.id}
+                    onClick={() => setSelectedSong(song)}
+                    className="cursor-pointer animate-fadeInUp"
+                  >
+                    <Cards
+                      title={song.name}
+                      desp={song.desp}
+                      image={song.image}
+                      language={song.language}
+                      genre={song.genre}
+                      songId={song.id}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">
+                  No songs match the selected filters.
+                </p>
+              )}
             </div>
-
-            <div>
-              <label htmlFor="message" className="block mb-2 font-medium">
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows="4"
-                required
-                className="w-full px-3 py-2 rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-2 rounded"
-            >
-              Send Message
-            </button>
-          </form>
+          </main>
         </div>
       </section>
 
       <Footer />
+
+      {selectedSong && (
+        <SongModal song={selectedSong} onClose={() => setSelectedSong(null)} />
+      )}
     </>
   );
 }
-
-export default Contact;
