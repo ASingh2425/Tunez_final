@@ -1,1 +1,0 @@
-All pictures are here.
